@@ -11,5 +11,5 @@ fileNames.forEach((fileName) => {
   const file = readFileSync(path);
   const str = iconv.decode(file, "win1250");
   const buf = iconv.encode(str, "utf8");
-  writeFileSync(path, buf);
+  writeFileSync(path, "\ufeff" + buf.toString());
 });
