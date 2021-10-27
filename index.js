@@ -10,6 +10,6 @@ fileNames.forEach((fileName) => {
   chmodSync(path, 0o666);
   const file = readFileSync(path);
   const str = iconv.decode(file, "win1250");
-  const buf = iconv.encode(str, "utf8");
-  writeFileSync(path, "\ufeff" + buf.toString());
+  const buf = iconv.encode(str, "utf8", { addBOM: true });
+  writeFileSync(path, buf);
 });
