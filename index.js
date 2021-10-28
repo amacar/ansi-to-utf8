@@ -10,6 +10,8 @@ const isBom = (file) => file[0] === 0xef && file[1] === 0xbb && file[2] === 0xbf
 
 fileNames.forEach((fileName) => {
   const path = resolve(dirName, fileName);
+  if (!path.endsWith(".srt")) return;
+
   chmodSync(path, 0o666);
   const file = readFileSync(path);
   const isFileUtf8 = isUtf8(file);
