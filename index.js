@@ -1,15 +1,24 @@
-const { readFileSync, writeFileSync, readdirSync, chmodSync } = require("fs");
+const { readFileSync, writeFileSync, readdirSync, chmodSync, accessSync, constants } = require("fs");
 const { resolve } = require("path");
 const iconv = require("iconv-lite");
 const isUtf8 = require("is-utf8");
 
 const isBom = (file) => file[0] === 0xef && file[1] === 0xbb && file[2] === 0xbf;
 
-module.exports = () => {
-  const dir = process.cwd();
-  const fileNames = readdirSync(dir);
+const convert = (dir) => {
+  let fileNames;
+  try {
+    fileNames = readdirSync(dir, { withFileTypes: true });
+  } catch (err) {
+    return;
+  }
+
   fileNames.forEach((fileName) => {
-    const path = resolve(dir, fileName);
+    const path = resolve(dir, fileName.name);
+    if (fileName.isDirectory()) {
+      return convert(path);
+    }
+
     if (!path.endsWith(".srt")) return;
 
     chmodSync(path, 0o666);
@@ -23,4 +32,9 @@ module.exports = () => {
     writeFileSync(path, buf);
     console.log(`converted: ${path}`);
   });
+};
+
+module.exports = () => {
+  const dir = process.cwd();
+  convert(dir);
 };
